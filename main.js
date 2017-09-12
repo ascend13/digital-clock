@@ -4,13 +4,20 @@ var RADIUS = 8;
 var MARGIN_TOP = 60;
 var MARGIN_LEFT = 30;
 
-const endTime = new Date(2017,8,4,24,00,00);
+// const endTime = new Date(2017,8,4,24,00,00);
 var curShowTimeSeconds = 0
 
 var balls = [];
 const colors = ["#33B5E5","#0099CC","#AA66CC","#9933CC","#99CC00","#669900","#FFBB33","#FF8800","#FF4444","#CC0000"]
 
 window.onload = function(){
+
+    WINDOW_WIDTH = document.body.clientWidth;
+    WINDOW_HEIGHT = document.body.clientHeight;
+    MARGIN_LEFT = Math.round(WINDOW_WIDTH/10);
+    RADIUS = Math.round(WINDOW_WIDTH*4/5/108)-1;
+
+    MARGIN_TOP = Math.round(WINDOW_HEIGHT/5);
 
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext("2d");
@@ -31,10 +38,10 @@ window.onload = function(){
 
 function getCurrentShowTimeSeconds() {
     var curTime = new Date();
-    var ret = endTime.getTime() - curTime.getTime();
-    ret = Math.round( ret/1000 )
+    var ret = curTime.getHours() * 3600 + curTime.getMinutes() * 60 +curTime.getSeconds();
+    
 
-    return ret >= 0 ? ret : 0;
+    return ret;
 }
 
 function update(){
@@ -91,9 +98,11 @@ function updateBalls(){
         }
     }
 
+    // 优化，去掉跳出canvas面板的小球
     var cnt = 0;
     for (var i = 0; i < balls.length; i++) 
-        if ( ball[i].x + RADIUS > 0 && balls[i].x - RADIUS < WINDOW_WIDTH) 
+        if ( balls[i].x + RADIUS > 0 && balls[i].x - RADIUS < WINDOW_WIDTH)
+           //将所有符合条件的小球都推在前面，超过cnt索引的小球都不在canvas中了 
             balls[cnt++] = balls[i];
 
          while ( balls.length > Math.min(300,cnt)) {
